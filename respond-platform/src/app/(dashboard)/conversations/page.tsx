@@ -186,6 +186,7 @@ export default function ConversationsPage() {
     <div className="flex flex-col h-full overflow-hidden">
       <Topbar title="Inbox" subtitle={`${openCount} open conversations`} />
       <div className="flex flex-1 overflow-hidden">
+
         <div className="w-80 flex flex-col border-r border-slate-200 bg-white shrink-0">
           <div className="p-3 border-b border-slate-100">
             <Input value={search} onChange={(e) => setSearch(e.target.value)}
