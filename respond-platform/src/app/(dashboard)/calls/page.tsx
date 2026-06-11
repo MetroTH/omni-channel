@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/server";
 import { formatTime } from "@/lib/utils";
-import { Phone, PhoneMissed, PhoneIncoming, PhoneOutgoing, Clock, Voicemail } from "lucide-react";
+import { Phone, PhoneMissed, PhoneIncoming, PhoneOutgoing, Clock } from "lucide-react";
 
 type CallRow = {
   id: string; direction: string; status: string; duration: number;
