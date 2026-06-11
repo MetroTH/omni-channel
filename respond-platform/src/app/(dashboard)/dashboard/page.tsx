@@ -41,18 +41,19 @@ export default async function DashboardPage() {
   }, {});
 
   const statCards = [
-    { label: "Open Conversations", value: stats.openConversations, icon: MessageSquare, color: "text-blue-600", bg: "bg-blue-50", trend: "" },
-    { label: "Resolved Today", value: stats.resolvedToday, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50", trend: "" },
-    { label: "Avg Response Time", value: `${stats.avgResponseTime}m`, icon: Clock, color: "text-purple-600", bg: "bg-purple-50", trend: "" },
-    { label: "Online Agents", value: `${stats.onlineAgents}/${stats.totalAgents}`, icon: Users, color: "text-orange-600", bg: "bg-orange-50", trend: "" },
-    { label: "Calls Today", value: stats.callsToday, icon: Phone, color: "text-indigo-600", bg: "bg-indigo-50", trend: "" },
-    { label: "Missed Calls", value: stats.missedCalls, icon: PhoneMissed, color: "text-red-600", bg: "bg-red-50", trend: "" },
+    { label: "Open Conversations", value: stats.openConversations, icon: MessageSquare, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Resolved Today", value: stats.resolvedToday, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
+    { label: "Avg Response Time", value: `${stats.avgResponseTime}m`, icon: Clock, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Online Agents", value: `${stats.onlineAgents}/${stats.totalAgents}`, icon: Users, color: "text-orange-600", bg: "bg-orange-50" },
+    { label: "Calls Today", value: stats.callsToday, icon: Phone, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { label: "Missed Calls", value: stats.missedCalls, icon: PhoneMissed, color: "text-red-600", bg: "bg-red-50" },
   ];
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Topbar title="Dashboard" subtitle="Overview of today's activity" />
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           {statCards.map((stat) => (
             <Card key={stat.label}>
@@ -64,11 +65,6 @@ export default async function DashboardPage() {
                   <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
                 </div>
-                {stat.trend && (
-                  <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" />{stat.trend}
-                  </span>
-                )}
               </CardBody>
             </Card>
           ))}
@@ -160,6 +156,7 @@ export default async function DashboardPage() {
             </div>
           </CardBody>
         </Card>
+
       </div>
     </div>
   );
