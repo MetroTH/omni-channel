@@ -21,9 +21,12 @@ export default function ReportsPage() {
       <Topbar
         title="Reports"
         subtitle="Analytics and performance metrics"
-        actions={<Button variant="outline" size="sm"><Download className="w-4 h-4" />Export</Button>}
+        actions={
+          <Button variant="outline" size="sm"><Download className="w-4 h-4" />Export</Button>
+        }
       />
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { icon: BarChart2, label: "Total This Week", value: "281", sub: "conversations", color: "bg-blue-50 text-blue-600", trend: "+14%" },
@@ -69,6 +72,7 @@ export default function ReportsPage() {
             </div>
           </CardBody>
         </Card>
+
       </div>
     </div>
   );

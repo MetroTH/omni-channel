@@ -20,6 +20,7 @@ export default function AutomationPage() {
         actions={<Button size="sm"><Plus className="w-4 h-4" />New Rule</Button>}
       />
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { icon: Bot, label: "Active Bots", value: 2, color: "bg-blue-50 text-blue-600" },
@@ -93,6 +94,7 @@ export default function AutomationPage() {
             </div>
           </CardBody>
         </Card>
+
       </div>
     </div>
   );
