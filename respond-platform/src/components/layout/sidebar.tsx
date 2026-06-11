@@ -57,6 +57,7 @@ export function Sidebar() {
 
     const channel = supabase.channel("sidebar-unread")
       .on("postgres_changes", { event: "*", schema: "public", table: "ip_conversations" }, async () => {
+        const supabase = createClient();
         const { count } = await supabase
           .from("ip_conversations")
           .select("*", { count: "exact", head: true })
