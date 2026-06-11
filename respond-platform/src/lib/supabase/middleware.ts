@@ -26,8 +26,8 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPublic = pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/webhooks") ||  // channel webhooks bypass auth
-    pathname.startsWith("/api/twilio") ||    // Twilio callbacks bypass auth (verified by signature)
+    pathname.startsWith("/api/webhooks") ||
+    pathname.startsWith("/api/twilio") ||
     pathname.match(/\.(ico|svg|png|jpg|jpeg|webp)$/);
 
   if (!user && !isPublic) {
