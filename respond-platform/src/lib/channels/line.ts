@@ -11,10 +11,6 @@ export type LineEvent = {
   };
 };
 
-/**
- * Verify LINE webhook signature.
- * LINE signs with HMAC-SHA256 of the raw body using the channel secret, base64-encoded.
- */
 export function verifySignature(
   rawBody: Buffer,
   signature: string,
@@ -23,7 +19,6 @@ export function verifySignature(
   const digest = createHmac("sha256", secret)
     .update(rawBody)
     .digest("base64");
-  // Constant-time comparison to prevent timing attacks
   if (digest.length !== signature.length) return false;
   let mismatch = 0;
   for (let i = 0; i < digest.length; i++) {
@@ -32,9 +27,6 @@ export function verifySignature(
   return mismatch === 0;
 }
 
-/**
- * Parse LINE webhook body into an array of LineEvent objects.
- */
 export function parseEvents(body: unknown): LineEvent[] {
   if (
     typeof body !== "object" ||
@@ -47,10 +39,6 @@ export function parseEvents(body: unknown): LineEvent[] {
   return (body as { events: LineEvent[] }).events;
 }
 
-/**
- * Push a message to a LINE user.
- * POST https://api.line.me/v2/bot/message/push
- */
 export async function sendMessage(
   to: string,
   messages: object[],
@@ -73,10 +61,6 @@ export async function sendMessage(
   }
 }
 
-/**
- * Reply to a LINE message using a reply token.
- * POST https://api.line.me/v2/bot/message/reply
- */
 export async function replyMessage(
   replyToken: string,
   messages: object[],

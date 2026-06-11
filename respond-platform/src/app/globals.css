@@ -35,7 +35,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -51,7 +50,6 @@ body {
   background: #94a3b8;
 }
 
-/* Status badge colors */
 .status-online { color: #22c55e; }
 .status-busy { color: #ef4444; }
 .status-away { color: #f59e0b; }

@@ -8,11 +8,6 @@ export type WAMessage = {
   timestamp: string;
 };
 
-/**
- * Verify WhatsApp/Meta webhook signature.
- * Meta signs with HMAC-SHA256 of the raw body using the app secret, hex-encoded,
- * and sends the result as "sha256=<hex>" in the X-Hub-Signature-256 header.
- */
 export function verifySignature(
   rawBody: Buffer,
   signature: string,
@@ -30,11 +25,6 @@ export function verifySignature(
   return mismatch === 0;
 }
 
-/**
- * Parse WhatsApp Cloud API webhook body into a flat array of WAMessage objects.
- * The Cloud API body structure:
- * { object: "whatsapp_business_account", entry: [{ changes: [{ value: { messages: [...] } }] }] }
- */
 export function parseMessages(body: unknown): WAMessage[] {
   if (typeof body !== "object" || body === null) return [];
 
@@ -60,10 +50,6 @@ export function parseMessages(body: unknown): WAMessage[] {
   return messages;
 }
 
-/**
- * Send a text message via WhatsApp Cloud API.
- * POST https://graph.facebook.com/v18.0/{phoneNumberId}/messages
- */
 export async function sendMessage(
   phoneNumberId: string,
   to: string,

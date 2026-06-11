@@ -11,24 +11,46 @@ export async function GET() {
   const twimlAppSid = process.env.TWILIO_TWIML_APP_SID;
 
   if (!accountSid || !apiKey || !apiSecret || !twimlAppSid) {
-    return NextResponse.json({ error: "Twilio not configured" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Twilio not configured" },
+      { status: 503 }
+    );
   }
 
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase.from("ip_profiles").select("id").eq("auth_user_id", user.id).single();
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from("ip_profiles")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .single();
+
   const identity = profile?.id ?? user.id;
 
   let twilioLib: {
     jwt: {
       AccessToken: {
-        new (accountSid: string, apiKey: string, apiSecret: string, opts: { identity: string; ttl: number }): {
+        new (
+          accountSid: string,
+          apiKey: string,
+          apiSecret: string,
+          opts: { identity: string; ttl: number }
+        ): {
           addGrant: (grant: unknown) => void;
           toJwt: () => string;
         };
-        VoiceGrant: new (opts: { outgoingApplicationSid: string; incomingAllow: boolean }) => unknown;
+        VoiceGrant: new (opts: {
+          outgoingApplicationSid: string;
+          incomingAllow: boolean;
+        }) => unknown;
       };
     };
   };
@@ -37,14 +59,25 @@ export async function GET() {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
     twilioLib = (new Function("m", "return require(m)"))("twilio");
   } catch {
-    return NextResponse.json({ error: "Twilio package not installed — run: npm i twilio" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Twilio package not installed — run: npm i twilio" },
+      { status: 503 }
+    );
   }
 
   const { AccessToken } = twilioLib.jwt;
   const { VoiceGrant } = AccessToken;
 
-  const token = new AccessToken(accountSid, apiKey, apiSecret, { identity, ttl: 3600 });
-  const voiceGrant = new VoiceGrant({ outgoingApplicationSid: twimlAppSid, incomingAllow: true });
+  const token = new AccessToken(accountSid, apiKey, apiSecret, {
+    identity,
+    ttl: 3600,
+  });
+
+  const voiceGrant = new VoiceGrant({
+    outgoingApplicationSid: twimlAppSid,
+    incomingAllow: true,
+  });
+
   token.addGrant(voiceGrant);
 
   return NextResponse.json({ token: token.toJwt(), identity });

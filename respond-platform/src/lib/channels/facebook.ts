@@ -7,11 +7,6 @@ export type FBMessage = {
   timestamp: number;
 };
 
-/**
- * Verify Facebook Messenger webhook signature.
- * Meta signs with HMAC-SHA256 of the raw body using the app secret, hex-encoded,
- * and sends the result as "sha256=<hex>" in the X-Hub-Signature-256 header.
- */
 export function verifySignature(
   rawBody: Buffer,
   signature: string,
@@ -29,11 +24,6 @@ export function verifySignature(
   return mismatch === 0;
 }
 
-/**
- * Parse Facebook Messenger webhook body into a flat array of FBMessage objects.
- * The Messenger body structure:
- * { object: "page", entry: [{ messaging: [{ sender: { id }, message: { mid, text }, timestamp }] }] }
- */
 export function parseMessages(body: unknown): FBMessage[] {
   if (typeof body !== "object" || body === null) return [];
 
@@ -66,10 +56,6 @@ export function parseMessages(body: unknown): FBMessage[] {
   return messages;
 }
 
-/**
- * Send a text message via Facebook Messenger Send API.
- * POST https://graph.facebook.com/v18.0/{pageId}/messages
- */
 export async function sendMessage(
   pageId: string,
   recipientId: string,

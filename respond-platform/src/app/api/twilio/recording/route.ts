@@ -20,14 +20,28 @@ export async function POST(request: NextRequest) {
   const recordingUrl = formData.get("RecordingUrl") as string | null;
   const recordingSid = formData.get("RecordingSid") as string | null;
 
-  if (!callSid) return NextResponse.json({ error: "CallSid required" }, { status: 400 });
-  if (!recordingUrl) return NextResponse.json({ ok: true });
+  if (!callSid) {
+    return NextResponse.json({ error: "CallSid required" }, { status: 400 });
+  }
+
+  if (!recordingUrl) {
+    return NextResponse.json({ ok: true });
+  }
 
   const admin = await createAdminClient();
-  const formattedUrl = recordingUrl.endsWith(".mp3") ? recordingUrl : `${recordingUrl}.mp3`;
 
-  const { error } = await admin.from("ip_calls").update({ recording_url: formattedUrl }).eq("twilio_sid", callSid);
-  if (error) console.error("[twilio/recording] Update error:", error, { recordingSid });
+  const formattedUrl = recordingUrl.endsWith(".mp3")
+    ? recordingUrl
+    : `${recordingUrl}.mp3`;
+
+  const { error } = await admin
+    .from("ip_calls")
+    .update({ recording_url: formattedUrl })
+    .eq("twilio_sid", callSid);
+
+  if (error) {
+    console.error("[twilio/recording] Update error:", error, { recordingSid });
+  }
 
   return NextResponse.json({ ok: true });
 }

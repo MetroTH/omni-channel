@@ -15,19 +15,12 @@ export interface UpsertContactResult {
   conversationId: string;
 }
 
-/**
- * Upsert a contact (matched on external_id + channel) and ensure an open/pending
- * conversation exists for that contact+channel pair.
- *
- * Returns the resolved contact ID and conversation ID.
- */
 export async function upsertContactAndConversation(
   supabase: SupabaseClient<Database>,
   params: UpsertContactParams
 ): Promise<UpsertContactResult> {
   const { externalId, name, channel, phone } = params;
 
-  // Upsert the contact — conflict target: (external_id, channel)
   const { data: contact, error: contactError } = await supabase
     .from("ip_contacts")
     .upsert(
@@ -51,7 +44,6 @@ export async function upsertContactAndConversation(
 
   const contactId = contact.id;
 
-  // Look for an existing non-resolved conversation for this contact+channel
   const { data: existing } = await supabase
     .from("ip_conversations")
     .select("id")
@@ -66,7 +58,6 @@ export async function upsertContactAndConversation(
     return { contactId, conversationId: existing.id };
   }
 
-  // Create a new conversation
   const { data: conversation, error: convError } = await supabase
     .from("ip_conversations")
     .insert({
@@ -94,10 +85,6 @@ export interface InsertInboundMessageParams {
   type?: Database["public"]["Enums"]["ip_message_type"];
 }
 
-/**
- * Insert an inbound message from a contact, then bump unread_count + updated_at
- * on the parent conversation.
- */
 export async function insertInboundMessage(
   supabase: SupabaseClient<Database>,
   params: InsertInboundMessageParams
@@ -123,15 +110,12 @@ export async function insertInboundMessage(
     );
   }
 
-  // Atomic increment via raw SQL to avoid read-modify-write race conditions.
-  // Requires the ip_increment_conversation_unread RPC (see supabase/migrations).
   const rpcResult = await supabase.rpc("ip_increment_conversation_unread" as never, {
     p_conversation_id: conversationId,
     p_last_message_id: message.id,
   } as never);
 
   if (rpcResult.error) {
-    // RPC not yet deployed — fall back to best-effort update
     await supabase
       .from("ip_conversations")
       .update({

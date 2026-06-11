@@ -11,16 +11,32 @@ type IpCallDirection = Database["public"]["Enums"]["ip_call_direction"];
 
 function mapTwilioStatus(twilioStatus: string): IpCallStatus {
   switch (twilioStatus) {
-    case "ringing": case "queued": return "ringing";
-    case "in-progress": return "answered";
-    case "no-answer": case "canceled": case "busy": return "missed";
-    case "completed": case "failed": return "ended";
-    default: return "ended";
+    case "ringing":
+    case "queued":
+      return "ringing";
+    case "in-progress":
+      return "answered";
+    case "no-answer":
+    case "canceled":
+    case "busy":
+      return "missed";
+    case "completed":
+      return "ended";
+    case "failed":
+      return "ended";
+    default:
+      return "ended";
   }
 }
 
 function mapDirection(twilioDirection: string): IpCallDirection {
-  return (twilioDirection === "outbound-api" || twilioDirection === "outbound-dial") ? "outbound" : "inbound";
+  if (
+    twilioDirection === "outbound-api" ||
+    twilioDirection === "outbound-dial"
+  ) {
+    return "outbound";
+  }
+  return "inbound";
 }
 
 export async function POST(request: NextRequest) {
@@ -41,18 +57,33 @@ export async function POST(request: NextRequest) {
   const to = formData.get("To") as string | null;
   const direction = formData.get("Direction") as string | null;
 
-  if (!callSid) return NextResponse.json({ error: "CallSid required" }, { status: 400 });
+  if (!callSid) {
+    return NextResponse.json({ error: "CallSid required" }, { status: 400 });
+  }
 
   const status = mapTwilioStatus(callStatus ?? "");
   const mappedDirection = mapDirection(direction ?? "inbound");
   const duration = parseInt(callDuration ?? "0", 10) || 0;
 
   const admin = await createAdminClient();
-  const { error } = await admin.from("ip_calls").upsert(
-    { twilio_sid: callSid, status, direction: mappedDirection, duration, from_number: from ?? null, to_number: to ?? null },
-    { onConflict: "twilio_sid" }
-  );
 
-  if (error) console.error("[twilio/status] Upsert error:", error);
+  const { error } = await admin
+    .from("ip_calls")
+    .upsert(
+      {
+        twilio_sid: callSid,
+        status,
+        direction: mappedDirection,
+        duration,
+        from_number: from ?? null,
+        to_number: to ?? null,
+      },
+      { onConflict: "twilio_sid" }
+    );
+
+  if (error) {
+    console.error("[twilio/status] Upsert error:", error);
+  }
+
   return NextResponse.json({ ok: true });
 }
